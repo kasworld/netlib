@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"os"
+	"runtime"
 	"runtime/pprof"
 	"time"
 
@@ -20,6 +21,8 @@ type DataPacket struct {
 var stat *actionstat.ActionStat
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	stat = actionstat.NewActionStat()
 	var listenFrom = flag.String("listenFrom", ":6666", "server ip/port")
 	var connCount = flag.Int("count", 1000, "connection count")

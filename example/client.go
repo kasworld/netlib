@@ -2,8 +2,11 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
+	"runtime"
 	"runtime/pprof"
+	"time"
 
 	"github.com/kasworld/log"
 	"github.com/kasworld/netlib/gogueclient"
@@ -15,6 +18,8 @@ type DataPacket struct {
 }
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	var connectTo = flag.String("connectTo", "localhost:6666", "server ip/port")
 	var count = flag.Int("count", 1000, "client count")
 	var rundur = flag.Int("rundur", 3600, "run sec")
@@ -33,8 +38,11 @@ func main() {
 	gogueclient.MultiClient(*connectTo, *count, *rundur, clientMain)
 }
 
-func clientMain(clientname string, connectTo string) chan<- bool {
-	quitCh := make(chan bool)
+func clientMain(connectTo string, clientnum int, dur int, endch chan bool) {
+	defer func() {
+		<-endch
+	}()
+	clientname := fmt.Sprintf("test%v", clientnum)
 	go func() {
 		gconn := gogueclient.NewClientGogueConn(connectTo)
 		if gconn == nil {
@@ -63,5 +71,5 @@ func clientMain(clientname string, connectTo string) chan<- bool {
 			}
 		}
 	}()
-	return quitCh
+	time.Sleep(time.Duration(dur) * time.Second)
 }

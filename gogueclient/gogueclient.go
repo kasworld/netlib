@@ -1,7 +1,6 @@
 package gogueclient
 
 import (
-	"fmt"
 	"net"
 	"time"
 
@@ -19,7 +18,7 @@ func NewClientGogueConn(connectTo string) *gogueconn.GogueConn {
 	return gogueconn.New(conn)
 }
 
-type ClientGoFn func(clientname string, connectTo string) chan<- bool
+type ClientGoFn func(connectTo string, num int, dur int, endch chan bool)
 
 func MultiClient(connectTo string, count int, rundur int, fn ClientGoFn) {
 	rnd := rand.New()
@@ -27,22 +26,13 @@ func MultiClient(connectTo string, count int, rundur int, fn ClientGoFn) {
 	go func() {
 		for i := 0; i < count; i++ {
 			endch <- true
-			go Client(connectTo, fmt.Sprintf("test%v", i), rnd.Intn(rundur), endch, fn)
+			go fn(connectTo, i, rnd.Intn(rundur), endch)
 			time.Sleep(1 * time.Millisecond)
 		}
 		for i := count; ; i++ {
 			endch <- true
-			go Client(connectTo, fmt.Sprintf("test%v", i), rnd.Intn(rundur), endch, fn)
+			go fn(connectTo, i, rnd.Intn(rundur), endch)
 		}
 	}()
 	time.Sleep(time.Duration(rundur) * time.Second)
-}
-
-func Client(connectTo string, name string, dur int, endch chan bool, fn ClientGoFn) {
-	defer func() {
-		<-endch
-	}()
-	quit := fn(name, connectTo)
-	time.Sleep(time.Duration(dur) * time.Second)
-	quit <- true
 }
