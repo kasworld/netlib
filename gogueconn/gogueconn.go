@@ -39,15 +39,7 @@ type GogueConn struct {
 	dec        IDecoder
 }
 
-func NewClientGogueConn(connectTo string) *GogueConn {
-	conn, err := net.Dial("tcp", connectTo)
-	if err != nil {
-		log.Error("client %v", err)
-		return nil
-	}
-	return NewGogueConn(conn)
-}
-func NewGogueConn(conn net.Conn) *GogueConn {
+func New(conn net.Conn) *GogueConn {
 	c := GogueConn{
 		conn:       conn,
 		packettype: PK_type,
@@ -105,4 +97,10 @@ func (c *GogueConn) RunRecv(v interface{}) <-chan interface{} {
 		rtn <- v
 	}()
 	return rtn
+}
+
+func (c *GogueConn) RunRecv2(packet interface{}, rtn chan<- error) {
+	go func() {
+		rtn <- c.Recv(packet)
+	}()
 }

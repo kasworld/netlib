@@ -29,7 +29,7 @@ func TCPServer(listenString string, connNum int, connThrottle int, runConn Serve
 		if err != nil {
 			log.Error("%v", err)
 		} else {
-			go runConn(gogueconn.NewGogueConn(conn), clientQueue)
+			go runConn(gogueconn.New(conn), clientQueue)
 		}
 	}
 }

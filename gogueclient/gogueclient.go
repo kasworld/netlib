@@ -16,7 +16,7 @@ func NewClientGogueConn(connectTo string) *gogueconn.GogueConn {
 		log.Error("client %v", err)
 		return nil
 	}
-	return gogueconn.NewGogueConn(conn)
+	return gogueconn.New(conn)
 }
 
 type ClientGoFn func(clientname string, connectTo string) chan<- bool
