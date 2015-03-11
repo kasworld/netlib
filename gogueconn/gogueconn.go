@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net"
 
 	"github.com/kasworld/log"
@@ -60,8 +61,7 @@ func (c *GogueConn) Send(v interface{}) (err error) {
 	defer func() {
 		if e := recover(); e != nil {
 			log.Error("Connection error %v", e)
-			printjson(v)
-			err = errors.New(e.(string))
+			err = errors.New(fmt.Sprintf("%v", e))
 		}
 	}()
 	switch c.packettype {
