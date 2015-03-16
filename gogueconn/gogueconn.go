@@ -24,15 +24,6 @@ type IEncoder interface {
 	Encode(v interface{}) error
 }
 
-// func printjson(v interface{}) {
-// 	data, err := json.MarshalIndent(v, "", "    ")
-// 	if err == nil {
-// 		log.Info("%v", string(data))
-// 	} else {
-// 		log.Error("Marshal err ")
-// 	}
-// }
-
 type GogueConn struct {
 	conn       net.Conn
 	packettype int
@@ -89,18 +80,3 @@ func (c *GogueConn) Recv(v interface{}) (err error) {
 func (c *GogueConn) Close() {
 	c.conn.Close()
 }
-
-// func (c *GogueConn) RunRecv(v interface{}) <-chan interface{} {
-// 	rtn := make(chan interface{})
-// 	go func() {
-// 		c.Recv(v)
-// 		rtn <- v
-// 	}()
-// 	return rtn
-// }
-
-// func (c *GogueConn) RunRecv2(packet interface{}, rtn chan<- error) {
-// 	go func() {
-// 		rtn <- c.Recv(packet)
-// 	}()
-// }

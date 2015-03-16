@@ -23,6 +23,7 @@ func main() {
 	var connectTo = flag.String("connectTo", "localhost:6666", "server ip/port")
 	var count = flag.Int("count", 1000, "client count")
 	var rundur = flag.Int("rundur", 3600, "run sec")
+	var clientdur = flag.Int("clientdur", 3600, "run sec")
 	var profilefilename = flag.String("pfilename", "", "profile filename")
 	flag.Parse()
 
@@ -35,10 +36,18 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
-	gogueclient.MultiClient(*connectTo, *count, *rundur, clientMain)
+	c := Clients{
+		*rnddelay,
+		*clientdur,
+	}
+	gogueclient.MultiClient(*connectTo, *count, *rundur, c.clientMain)
 }
 
-func clientMain(connectTo string, clientnum int, dur int, endch chan bool) {
+type Clients struct {
+	RunDur int
+}
+
+func (c Clients) clientMain(connectTo string, clientnum int, endch chan bool) {
 	defer func() {
 		<-endch
 	}()
@@ -71,5 +80,5 @@ func clientMain(connectTo string, clientnum int, dur int, endch chan bool) {
 			}
 		}
 	}()
-	time.Sleep(time.Duration(dur) * time.Second)
+	time.Sleep(time.Duration(c.RunDur) * time.Second)
 }
