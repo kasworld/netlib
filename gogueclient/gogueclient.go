@@ -20,16 +20,12 @@ func NewClientGogueConn(connectTo string) *gogueconn.GogueConn {
 type ClientGoFn func(connectTo string, num int, endch chan bool)
 
 func MultiClient(connectTo string, count int, rundur int, fn ClientGoFn) {
-	endch := make(chan bool, count)
 	go func() {
-		for i := 0; i < count; i++ {
+		endch := make(chan bool, count)
+		for i := 0; ; i++ {
 			endch <- true
 			go fn(connectTo, i, endch)
 			time.Sleep(1 * time.Millisecond)
-		}
-		for i := count; ; i++ {
-			endch <- true
-			go fn(connectTo, i, endch)
 		}
 	}()
 	time.Sleep(time.Duration(rundur) * time.Second)
