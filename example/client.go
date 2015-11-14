@@ -41,7 +41,7 @@ func main() {
 	if *profilefilename != "" {
 		f, err := os.Create(*profilefilename)
 		if err != nil {
-			log.Fatalf("profile %v", err)
+			log.Fatal("profile %v", err)
 		}
 		pprof.StartCPUProfile(f)
 		defer pprof.StopCPUProfile()
